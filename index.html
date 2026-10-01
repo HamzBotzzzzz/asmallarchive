@@ -1,0 +1,2677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Someone's Archive</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f5f4f0;
+      --bg-soft: #eceae4;
+      --text: #171717;
+      --muted: #7a7a7a;
+      --accent: #ff4d6d;
+      --accent-soft: rgba(255, 77, 109, 0.12);
+      --ease: cubic-bezier(.2, .7, .2, 1);
+      --ease-soft: cubic-bezier(.16, 1, .3, 1);
+      --pad-x: clamp(20px, 7vw, 90px);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Helvetica, Arial, sans-serif;
+      font-feature-settings: "kern", "liga", "calt";
+      overflow-x: hidden;
+      line-height: 1.5;
+      cursor: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: none;
+    }
+
+    a {
+      cursor: none;
+    }
+
+    audio {
+      display: none;
+    }
+
+
+    /* =====================================================
+       CURSOR
+    ===================================================== */
+
+    .cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--text);
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition:
+        width 0.25s var(--ease),
+        height 0.25s var(--ease),
+        background 0.25s var(--ease);
+      mix-blend-mode: difference;
+      will-change: transform, width, height;
+    }
+
+    .cursor.hover {
+      width: 42px;
+      height: 42px;
+      background: #fff;
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      body,
+      button,
+      a {
+        cursor: auto;
+      }
+
+      .cursor {
+        display: none;
+      }
+    }
+
+
+    /* =====================================================
+       PROGRESS BAR
+    ===================================================== */
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: transparent;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .progress-bar span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 0.15s linear;
+    }
+
+
+    /* =====================================================
+       MARGIN QUOTE
+    ===================================================== */
+
+    .margin-quote {
+      position: fixed;
+      left: 22px;
+      top: 50%;
+      transform: translateY(-50%) rotate(-90deg);
+      transform-origin: left center;
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0.55;
+      z-index: 5;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
+      .margin-quote {
+        display: none;
+      }
+    }
+
+
+    /* =====================================================
+       INTRO
+    ===================================================== */
+
+    .intro {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(90px, 12vh, 140px) var(--pad-x) 140px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro::before {
+      content: "";
+      position: absolute;
+      width: 55vw;
+      height: 55vw;
+      max-width: 700px;
+      max-height: 700px;
+      right: -25vw;
+      top: -20vw;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(255, 77, 109, 0.045),
+        transparent 68%
+      );
+      pointer-events: none;
+      animation: introGlow 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes introGlow {
+      from {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+
+      to {
+        transform: translate3d(-30px, 25px, 0) scale(1.08);
+      }
+    }
+
+    .intro-number {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 30px;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: introFade 1s var(--ease-soft) 0.15s forwards;
+    }
+
+    .intro-kicker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      opacity: 0;
+      transform: translateY(15px);
+      animation: introFade 1s var(--ease-soft) 0.35s forwards;
+    }
+
+    .intro-kicker::before {
+      content: "";
+      width: 28px;
+      height: 1px;
+      background: currentColor;
+      transform-origin: left;
+      transform: scaleX(0);
+      animation: introLine 1.2s var(--ease-soft) 0.65s forwards;
+    }
+
+    @keyframes introLine {
+      to {
+        transform: scaleX(1);
+      }
+    }
+
+    .intro h1 {
+      font-size: clamp(40px, 6.4vw, 84px);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      font-weight: 700;
+      max-width: 11ch;
+      text-wrap: balance;
+      opacity: 0;
+      transform: translateY(30px) scale(0.985);
+      filter: blur(8px);
+      animation: introTitle 1.35s var(--ease-soft) 0.65s forwards;
+    }
+
+    @keyframes introTitle {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    .intro-sub {
+      margin-top: 32px;
+      font-size: clamp(14px, 1.2vw, 16px);
+      color: var(--muted);
+      line-height: 1.75;
+      max-width: 32ch;
+      opacity: 0;
+      transform: translateY(18px);
+      animation: introFade 1s var(--ease-soft) 1.05s forwards;
+    }
+
+    @keyframes introFade {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: var(--pad-x);
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: introFade 1s var(--ease-soft) 1.5s forwards;
+    }
+
+    .scroll-hint::after {
+      content: "";
+      display: block;
+      width: 42px;
+      height: 1px;
+      background: currentColor;
+      transform-origin: left;
+      animation: linePulse 2.5s var(--ease) 1.8s infinite;
+    }
+
+    @keyframes linePulse {
+      0%,
+      100% {
+        transform: scaleX(0.25);
+        opacity: 0.35;
+      }
+
+      50% {
+        transform: scaleX(1);
+        opacity: 1;
+      }
+    }
+
+
+    /* =====================================================
+       GALLERY
+    ===================================================== */
+
+    .gallery {
+      padding: 8vh var(--pad-x) 18vh;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(95px, 14vh, 185px);
+    }
+
+    .section-label {
+      display: flex;
+      align-items: baseline;
+      gap: 22px;
+      opacity: 0;
+      transform: translateY(15px);
+      transition:
+        opacity 0.9s var(--ease),
+        transform 0.9s var(--ease);
+    }
+
+    .section-label.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-label .num {
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 700;
+      letter-spacing: -0.045em;
+      line-height: 0.95;
+      color: var(--text);
+    }
+
+    .section-label .txt {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: var(--muted);
+      text-transform: uppercase;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+
+    /* =====================================================
+       PHOTO ROW SYSTEM
+    ===================================================== */
+
+    .photo-row {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .photo-row.left {
+      justify-content: flex-start;
+      padding-left: clamp(0px, 2vw, 28px);
+    }
+
+    .photo-row.center {
+      justify-content: center;
+    }
+
+    .photo-row.right {
+      justify-content: flex-end;
+      padding-right: clamp(0px, 2vw, 28px);
+    }
+
+    .photo-row.pair {
+      justify-content: center;
+      align-items: flex-start;
+      gap: clamp(32px, 7vw, 110px);
+    }
+
+
+    /* =====================================================
+       PHOTO CARD
+    ===================================================== */
+
+    .photo-card {
+      position: relative;
+      opacity: 0;
+      transform: translateY(65px) scale(0.985);
+      transition:
+        opacity 1s var(--ease),
+        transform 1s var(--ease);
+      will-change: transform, opacity;
+    }
+
+    .photo-card.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .photo-card.large {
+      width: min(52vw, 620px);
+    }
+
+    .photo-card.medium {
+      width: min(35vw, 420px);
+    }
+
+    .photo-card.small {
+      width: min(23vw, 270px);
+    }
+
+    .photo-row.left .photo-card.large {
+      margin-left: clamp(0px, 2vw, 28px);
+    }
+
+    .photo-row.right .photo-card.medium {
+      margin-right: clamp(2vw, 5vw, 70px);
+    }
+
+    .photo-row.right .photo-card.small {
+      margin-right: clamp(4vw, 10vw, 150px);
+    }
+
+    .photo-row.center .photo-card.large {
+      transform-origin: center center;
+    }
+
+    .photo-row.pair .photo-card.medium {
+      margin-top: 0;
+    }
+
+    .photo-row.pair .photo-card.small {
+      margin-top: clamp(65px, 8vw, 125px);
+    }
+
+    .photo-row.pair .photo-card:nth-child(2) {
+      transition-delay: 120ms;
+    }
+
+
+    /* =====================================================
+       PHOTO WRAPPER
+    ===================================================== */
+
+    .photo-wrapper {
+      position: relative;
+      overflow: hidden;
+      background: var(--bg-soft);
+      border-radius: 4px;
+      isolation: isolate;
+    }
+
+    .photo-card.large .photo-wrapper {
+      aspect-ratio: 4 / 4.65;
+    }
+
+    .photo-card.medium .photo-wrapper {
+      aspect-ratio: 4 / 4.8;
+    }
+
+    .photo-card.small .photo-wrapper {
+      aspect-ratio: 4 / 5;
+    }
+
+    .photo-wrapper::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.025),
+        transparent 35%
+      );
+      pointer-events: none;
+      opacity: 0.4;
+      z-index: 2;
+    }
+
+
+    /* =====================================================
+       IMAGE
+    ===================================================== */
+
+    .photo-wrapper img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      will-change: transform;
+
+      transform:
+        translate3d(0, var(--py, 0px), 0)
+        scale(1.02);
+
+      transition: transform 0.9s var(--ease-soft);
+    }
+
+    .photo-card:hover .photo-wrapper img {
+      transform:
+        translate3d(0, var(--py, 0px), 0)
+        scale(1.06);
+    }
+
+
+    /* =====================================================
+       CAPTIONS
+    ===================================================== */
+
+    .photo-info {
+      padding-top: 16px;
+    }
+
+    .photo-caption {
+      display: block;
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 38ch;
+      letter-spacing: -0.005em;
+    }
+
+    .photo-card.large .photo-caption {
+      max-width: 42ch;
+    }
+
+    .photo-card.medium .photo-caption {
+      max-width: 34ch;
+    }
+
+    .photo-card.small .photo-caption {
+      max-width: 28ch;
+    }
+
+    .caption-right {
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .caption-center {
+      margin-inline: auto;
+      text-align: center;
+    }
+
+
+    /* =====================================================
+       REACTION
+    ===================================================== */
+
+    .reaction {
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #222;
+      font-size: 20px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.10),
+        0 0 0 1px rgba(0, 0, 0, 0.03);
+      transition:
+        transform 0.25s var(--ease),
+        background 0.25s var(--ease),
+        color 0.25s var(--ease),
+        box-shadow 0.25s var(--ease);
+      z-index: 5;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .reaction:hover {
+      transform: translateX(-50%) scale(1.08);
+      box-shadow:
+        0 6px 26px rgba(0, 0, 0, 0.14),
+        0 0 0 1px rgba(0, 0, 0, 0.04);
+    }
+
+    .reaction:active {
+      transform: translateX(-50%) scale(0.92);
+    }
+
+    .reaction:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .reaction.reacted {
+      color: var(--accent);
+      background: #fff;
+      box-shadow:
+        0 4px 22px var(--accent-soft),
+        0 0 0 1px rgba(255, 77, 109, 0.15);
+      animation: reactionPop 0.45s var(--ease);
+    }
+
+    @keyframes reactionPop {
+      0% {
+        transform: translateX(-50%) scale(1);
+      }
+
+      40% {
+        transform: translateX(-50%) scale(1.28);
+      }
+
+      100% {
+        transform: translateX(-50%) scale(1);
+      }
+    }
+
+
+    /* =====================================================
+       HEARTS
+    ===================================================== */
+
+    .heart-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 4;
+    }
+
+    .heart {
+      position: absolute;
+      left: 50%;
+      bottom: 28px;
+      width: 10px;
+      height: 10px;
+      background: var(--accent);
+      transform:
+        translate(-50%, 0)
+        rotate(-45deg)
+        scale(0.3);
+      opacity: 0;
+      animation: heart-pop 1000ms var(--ease) forwards;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: inherit;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -5px;
+      left: 0;
+    }
+
+    .heart::after {
+      top: 0;
+      left: 5px;
+    }
+
+    @keyframes heart-pop {
+      0% {
+        opacity: 0;
+        transform:
+          translate(-50%, 0)
+          rotate(-45deg)
+          scale(0.3);
+      }
+
+      20% {
+        opacity: 1;
+        transform:
+          translate(-50%, -20px)
+          rotate(-45deg)
+          scale(1);
+      }
+
+      100% {
+        opacity: 0;
+        transform:
+          translate(
+            calc(-50% + var(--x)),
+            calc(-30px + var(--y))
+          )
+          rotate(calc(-45deg + var(--rotate)))
+          scale(var(--scale));
+      }
+    }
+
+
+    /* =====================================================
+       NOTES
+    ===================================================== */
+
+    .note {
+      min-height: 50vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8vh clamp(20px, 6vw, 80px);
+      opacity: 0;
+      transform: translateY(45px);
+      transition:
+        opacity 1.1s var(--ease),
+        transform 1.1s var(--ease);
+    }
+
+    .note.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .note p {
+      font-size: clamp(22px, 3.4vw, 46px);
+      line-height: 1.1;
+      letter-spacing: -0.035em;
+      max-width: 22ch;
+      text-wrap: balance;
+    }
+
+    .note span {
+      color: var(--muted);
+    }
+
+
+    /* =====================================================
+       STORY LINE
+    ===================================================== */
+
+    .story-line {
+      min-height: 28vh;
+      display: flex;
+      align-items: center;
+      padding: 6vh 0;
+      opacity: 0;
+      transform: translateY(35px);
+      transition:
+        opacity 1s var(--ease),
+        transform 1s var(--ease);
+    }
+
+    .story-line.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .story-line p {
+      max-width: 26ch;
+      font-size: clamp(17px, 2vw, 28px);
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      text-wrap: balance;
+    }
+
+    .story-line span {
+      color: var(--muted);
+    }
+
+
+    /* =====================================================
+       ✨ HER SONG INTERLUDE ✨
+    ===================================================== */
+
+    .her-song {
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8vh 0 4vh;
+      opacity: 0;
+      transform: translateY(50px);
+      transition:
+        opacity 1.1s var(--ease),
+        transform 1.1s var(--ease);
+    }
+
+    .her-song.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .her-song .song-kicker {
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 26px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .her-song .song-kicker::before,
+    .her-song .song-kicker::after {
+      content: "";
+      width: 24px;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.5;
+    }
+
+    .song-cover-frame {
+      width: clamp(180px, 22vw, 240px);
+      aspect-ratio: 1 / 1;
+      border-radius: 6px;
+      background: #fff;
+      padding: 8px;
+      box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.10),
+        0 4px 14px rgba(0, 0, 0, 0.06),
+        0 0 0 1px rgba(0, 0, 0, 0.03);
+      margin-bottom: 28px;
+      transition: transform 0.7s var(--ease-soft);
+    }
+
+    .her-song:hover .song-cover-frame {
+      transform: translateY(-4px);
+    }
+
+    .song-cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 3px;
+      display: block;
+    }
+
+    .song-title {
+      font-size: clamp(18px, 1.8vw, 22px);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      max-width: 22ch;
+      margin-bottom: 6px;
+      text-wrap: balance;
+    }
+
+    .song-artist {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: -0.005em;
+      margin-bottom: 32px;
+    }
+
+    /* Player */
+
+    .song-player {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: min(380px, 88vw);
+      margin-bottom: 8px;
+    }
+
+    .song-play {
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: 50%;
+      background: var(--text);
+      color: #fff;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(0, 0, 0, 0.02);
+      transition:
+        transform 0.25s var(--ease),
+        background 0.25s var(--ease);
+      -webkit-tap-highlight-color: transparent;
+      padding: 0;
+    }
+
+    .song-play:hover {
+      transform: scale(1.06);
+      background: #000;
+    }
+
+    .song-play:active {
+      transform: scale(0.94);
+    }
+
+    .song-play:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    /* Play / pause icon via svg */
+    .song-play svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+      fill: currentColor;
+    }
+
+    .song-play .icon-pause { display: none; }
+    .song-play.playing .icon-play { display: none; }
+    .song-play.playing .icon-pause { display: block; }
+
+    .song-track-wrap {
+      flex: 1;
+      position: relative;
+      padding: 12px 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .song-track {
+      position: relative;
+      height: 2px;
+      background: rgba(0, 0, 0, 0.12);
+      border-radius: 2px;
+      overflow: visible;
+    }
+
+    .song-track-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: var(--text);
+      border-radius: 2px;
+      transition: width 0.1s linear;
+    }
+
+    .song-track-thumb {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--text);
+      transform: translate(-50%, -50%) scale(0.001);
+      transition:
+        transform 0.25s var(--ease),
+        left 0.1s linear;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .song-track-wrap:hover .song-track-thumb,
+    .song-track-wrap.active .song-track-thumb {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .song-time {
+      display: flex;
+      justify-content: space-between;
+      width: min(380px, 88vw);
+      font-size: 10.5px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
+      margin-bottom: 32px;
+    }
+
+    .song-caption {
+      font-size: 12.5px;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 36ch;
+      letter-spacing: -0.005em;
+      text-wrap: pretty;
+    }
+
+    /* Saat lagu sedang playing — kasih sedikit aksen */
+    .her-song.playing .song-cover-frame {
+      box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.14),
+        0 4px 14px rgba(0, 0, 0, 0.08),
+        0 0 0 1px rgba(255, 77, 109, 0.18);
+    }
+
+    /* Mobile */
+    @media (max-width: 700px) {
+      .her-song {
+        min-height: 60vh;
+        padding: 6vh 0 2vh;
+      }
+
+      .song-cover-frame {
+        width: 180px;
+        padding: 6px;
+        margin-bottom: 24px;
+      }
+
+      .song-title {
+        font-size: 18px;
+        max-width: 20ch;
+      }
+
+      .song-artist {
+        font-size: 12.5px;
+        margin-bottom: 28px;
+      }
+
+      .song-player {
+        gap: 14px;
+      }
+
+      .song-play {
+        width: 40px;
+        height: 40px;
+      }
+
+      .song-caption {
+        font-size: 12px;
+        max-width: 32ch;
+      }
+    }
+
+
+    /* =====================================================
+       ENDING
+    ===================================================== */
+
+    .ending {
+      min-height: 85svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 80px var(--pad-x);
+      gap: 34px;
+      opacity: 0;
+      transform: translateY(45px);
+      transition:
+        opacity 1.2s var(--ease),
+        transform 1.2s var(--ease);
+      position: relative;
+    }
+
+    .ending.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .ending h2 {
+      font-size: clamp(30px, 6vw, 82px);
+      letter-spacing: -0.05em;
+      line-height: 0.98;
+      max-width: 16ch;
+      text-wrap: balance;
+    }
+
+    .ending .divider {
+      width: 40px;
+      height: 1px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .ending p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+      letter-spacing: 0.01em;
+    }
+
+
+    /* =====================================================
+       FINAL FADE
+    ===================================================== */
+
+    .final-fade {
+      height: 60vh;
+      background: linear-gradient(
+        180deg,
+        transparent,
+        #0a0a0a
+      );
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 8vh;
+    }
+
+    .final-fade .last-word {
+      color: #e8e6e2;
+      font-size: 12px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      opacity: 0.5;
+      font-weight: 500;
+    }
+
+
+    /* =====================================================
+       TABLET
+    ===================================================== */
+
+    @media (max-width: 1000px) and (min-width: 701px) {
+
+      .photo-card.large {
+        width: min(56vw, 560px);
+      }
+
+      .photo-card.medium {
+        width: min(40vw, 390px);
+      }
+
+      .photo-card.small {
+        width: min(27vw, 250px);
+      }
+
+      .photo-row.right .photo-card.medium {
+        margin-right: 2vw;
+      }
+
+      .photo-row.right .photo-card.small {
+        margin-right: 5vw;
+      }
+
+      .photo-row.pair {
+        gap: 5vw;
+      }
+
+      .photo-row.pair .photo-card.small {
+        margin-top: 70px;
+      }
+    }
+
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
+
+    @media (max-width: 700px) {
+
+      :root {
+        --pad-x: 22px;
+      }
+
+      .intro {
+        justify-content: flex-start;
+        padding:
+          clamp(90px, 18vh, 150px)
+          var(--pad-x)
+          120px;
+      }
+
+      .intro h1 {
+        font-size: clamp(34px, 10.5vw, 54px);
+        letter-spacing: -0.045em;
+        line-height: 1.02;
+      }
+
+      .intro-kicker {
+        font-size: 11px;
+        margin-bottom: 22px;
+      }
+
+      .intro-number {
+        margin-bottom: 24px;
+      }
+
+      .intro-sub {
+        margin-top: 26px;
+        font-size: 14px;
+        max-width: 34ch;
+      }
+
+      .scroll-hint {
+        bottom: 28px;
+      }
+
+      .gallery {
+        gap: 92px;
+        padding-bottom: 14vh;
+      }
+
+      .section-label {
+        gap: 14px;
+      }
+
+      .section-label .num {
+        font-size: 30px;
+      }
+
+      .section-label .txt {
+        font-size: 9px;
+        letter-spacing: 0.18em;
+      }
+
+      .photo-row,
+      .photo-row.pair {
+        flex-direction: column;
+        gap: 58px;
+        justify-content: flex-start;
+        padding: 0;
+      }
+
+      .photo-card.large {
+        width: 100%;
+      }
+
+      .photo-card.medium {
+        width: 88%;
+      }
+
+      .photo-card.small {
+        width: 72%;
+      }
+
+      .photo-row.left .photo-card.large {
+        margin-left: 0;
+      }
+
+      .photo-row.left .photo-card.small {
+        align-self: flex-end;
+      }
+
+      .photo-row.right .photo-card.medium {
+        align-self: flex-end;
+        margin-right: 0;
+      }
+
+      .photo-row.right .photo-card.small {
+        align-self: flex-start;
+        margin-right: 0;
+      }
+
+      .photo-row.center .photo-card.large {
+        align-self: center;
+      }
+
+      .photo-row.pair .photo-card.medium {
+        align-self: flex-start;
+        margin-top: 0;
+      }
+
+      .photo-row.pair .photo-card.small {
+        align-self: flex-end;
+        margin-top: -5px;
+      }
+
+      .photo-card.large .photo-wrapper {
+        aspect-ratio: 4 / 4.7;
+      }
+
+      .photo-card.medium .photo-wrapper {
+        aspect-ratio: 4 / 4.8;
+      }
+
+      .photo-card.small .photo-wrapper {
+        aspect-ratio: 4 / 5;
+      }
+
+      .photo-info {
+        padding-top: 14px;
+      }
+
+      .photo-caption,
+      .photo-card.small .photo-caption,
+      .photo-card.medium .photo-caption,
+      .photo-card.large .photo-caption {
+        max-width: 100%;
+        font-size: 12.5px;
+        line-height: 1.65;
+      }
+
+      .caption-right,
+      .caption-center {
+        text-align: left;
+        margin: 0;
+      }
+
+      .note {
+        min-height: 40vh;
+        padding: 6vh 0;
+      }
+
+      .note p {
+        font-size: clamp(22px, 7vw, 32px);
+        line-height: 1.15;
+        letter-spacing: -0.03em;
+        max-width: 20ch;
+      }
+
+      .story-line {
+        min-height: 20vh;
+        padding: 4vh 0;
+      }
+
+      .story-line p {
+        font-size: clamp(17px, 4.6vw, 22px);
+        line-height: 1.35;
+        max-width: 22ch;
+      }
+
+      .ending {
+        min-height: 60svh;
+        gap: 26px;
+      }
+
+      .ending h2 {
+        font-size: clamp(28px, 8.5vw, 40px);
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+      }
+
+      .ending p {
+        font-size: 12px;
+      }
+    }
+
+
+    /* =====================================================
+       VERY SMALL PHONE
+    ===================================================== */
+
+    @media (max-width: 380px) {
+
+      .intro h1 {
+        font-size: 32px;
+      }
+
+      .note p {
+        font-size: 21px;
+      }
+
+      .story-line p {
+        font-size: 16px;
+      }
+
+      .ending h2 {
+        font-size: 26px;
+      }
+
+      .photo-card.medium {
+        width: 90%;
+      }
+
+      .photo-card.small {
+        width: 76%;
+      }
+    }
+
+
+    /* =====================================================
+       REDUCED MOTION
+    ===================================================== */
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      .photo-card,
+      .note,
+      .story-line,
+      .ending,
+      .section-label,
+      .her-song {
+        opacity: 1;
+        transform: none;
+      }
+
+      .photo-wrapper img {
+        height: 100%;
+        transform: none !important;
+      }
+
+      html {
+        scroll-behavior: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =====================================================
+       BACKGROUND AUDIO (BGM)
+  ===================================================== -->
+  <audio id="bgm" loop preload="auto">
+    <source src="https://files.catbox.moe/66i6ah.m4a" type="audio/mpeg">
+  </audio>
+
+  <!-- =====================================================
+       ⬇️ HER SONG — ganti src dengan audio lagu favorit dia
+  ===================================================== -->
+  <audio id="her-song" preload="metadata">
+    <source src="https://files.catbox.moe/abw0gp.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="cursor" aria-hidden="true"></div>
+
+  <div class="progress-bar" aria-hidden="true">
+    <span></span>
+  </div>
+
+  <div class="margin-quote" aria-hidden="true">
+    a small archive — 2024
+  </div>
+
+
+  <!-- =====================================================
+       INTRO
+  ===================================================== -->
+
+  <section class="intro">
+
+    <div class="intro-number">01</div>
+
+    <div class="intro-kicker">
+      a little introduction
+    </div>
+
+    <h1>
+      there's a lot<br>
+      i could say<br>
+      about her.
+    </h1>
+
+    <p class="intro-sub">
+      but honestly,
+      i think you'd understand better
+      if i just showed you.
+    </p>
+
+    <div class="scroll-hint">
+      Scroll
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       GALLERY
+  ===================================================== -->
+
+  <main class="gallery">
+
+    <div class="section-label reveal">
+      <div class="num">02</div>
+      <div class="txt">A few things about her</div>
+    </div>
+
+
+    <!-- PHOTO 01 -->
+
+    <div class="photo-row left">
+
+      <div class="photo-card large reveal">
+
+        <div class="photo-wrapper">
+
+          <img
+            src="https://files.catbox.moe/7y43uq.webp"
+            alt="A photo of her"
+            loading="lazy"
+          />
+
+          <div class="heart-container"></div>
+
+          <button
+            class="reaction"
+            aria-label="React to photo"
+            aria-pressed="false"
+          >
+            ♡
+          </button>
+
+        </div>
+
+        <div class="photo-info">
+
+          <span class="photo-caption">
+            there's something about the way she exists.
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- PHOTO 02 -->
+
+    <div class="photo-row right">
+
+      <div class="photo-card small reveal">
+
+        <div class="photo-wrapper">
+
+          <img
+            src="https://files.catbox.moe/s3wnai.webp"
+            alt="A photo of her"
+            loading="lazy"
+          />
+
+          <div class="heart-container"></div>
+
+          <button
+            class="reaction"
+            aria-label="React to photo"
+            aria-pressed="false"
+          >
+            ♡
+          </button>
+
+        </div>
+
+        <div class="photo-info">
+
+          <span class="photo-caption caption-right">
+            nothing particularly loud,
+            yet somehow the room feels different.
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- NOTE 01 -->
+
+    <section class="note reveal">
+
+      <p>
+        the way she talks,
+        the way she smiles,
+        <span>
+          the way ordinary moments somehow stop feeling ordinary.
+        </span>
+      </p>
+
+    </section>
+
+
+    <!-- NOTE 02 -->
+
+    <section class="note reveal">
+
+      <p>
+        if beauty were only about symmetry,
+        <span>
+          this would be a much simpler story.
+        </span>
+      </p>
+
+    </section>
+
+
+    <!-- PHOTO 03 -->
+
+    <div class="photo-row center">
+
+      <div class="photo-card large reveal">
+
+        <div class="photo-wrapper">
+
+          <img
+            src="https://files.catbox.moe/n7a3hs.webp"
+            alt="A photo of her"
+            loading="lazy"
+          />
+
+          <div class="heart-container"></div>
+
+          <button
+            class="reaction"
+            aria-label="React to photo"
+            aria-pressed="false"
+          >
+            ♡
+          </button>
+
+        </div>
+
+        <div class="photo-info">
+
+          <span class="photo-caption caption-center">
+            some people remind you of sunlight.
+            she feels more like the light that finds
+            its way through the curtains.
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- STORY 01 -->
+
+    <section class="story-line reveal">
+
+      <p>
+        not the kind of beauty that asks to be noticed.
+        <span>it just happens.</span>
+      </p>
+
+    </section>
+
+
+    <!-- PHOTO 04 + 05 -->
+
+    <div class="photo-row pair">
+
+      <div class="photo-card medium reveal">
+
+        <div class="photo-wrapper">
+
+          <img
+            src="https://files.catbox.moe/wk6bd1.webp"
+            alt="A photo of her"
+            loading="lazy"
+          />
+
+          <div class="heart-container"></div>
+
+          <button
+            class="reaction"
+            aria-label="React to photo"
+            aria-pressed="false"
+          >
+            ♡
+          </button>
+
+        </div>
+
+        <div class="photo-info">
+
+          <span class="photo-caption">
+            i could probably find prettier words.
+            but every time i try,
+            they somehow sound less like her.
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="photo-card small reveal">
+
+        <div class="photo-wrapper">
+
+          <img
+            src="https://files.catbox.moe/hq2hso.webp"
+            alt="A photo of her"
+            loading="lazy"
+          />
+
+          <div class="heart-container"></div>
+
+          <button
+            class="reaction"
+            aria-label="React to photo"
+            aria-pressed="false"
+          >
+            ♡
+          </button>
+
+        </div>
+
+        <div class="photo-info">
+
+          <span class="photo-caption">
+            if the world were written in seasons,
+            she'd be the part where spring refuses to leave.
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ✨ HER SONG INTERLUDE ✨
+         Section lagu favorit dia
+         — interlude naratif di antara foto 5 dan 6
+    ===================================================== -->
+
+    <section class="her-song reveal" id="her-song-section">
+
+      <div class="song-kicker">
+        her favorite song
+      </div>
+
+      <div class="song-cover-frame">
+        <!-- ⬇️ GANTI link cover art di bawah -->
+        <img
+          class="song-cover"
+          src="https://files.catbox.moe/7yamq7.jpg"
+          alt="Cover art for her favorite song"
+          loading="lazy"
+        />
+      </div>
+
+      <h3 class="song-title">
+        <!-- ⬇️ GANTI judul lagu -->
+        Moth To A Flame
+      </h3>
+
+      <p class="song-artist">
+        <!-- ⬇️ GANTI artist -->
+        Swedish House Mafia, The Weeknd
+      </p>
+
+      <div class="song-player">
+
+        <button
+          class="song-play"
+          id="songPlayBtn"
+          aria-label="Play her favorite song"
+          aria-pressed="false"
+        >
+          <svg class="icon-play" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M3 1.5v11l9-5.5-9-5.5z"/>
+          </svg>
+          <svg class="icon-pause" viewBox="0 0 14 14" aria-hidden="true">
+            <rect x="2" y="1.5" width="3.5" height="11"/>
+            <rect x="8.5" y="1.5" width="3.5" height="11"/>
+          </svg>
+        </button>
+
+        <div class="song-track-wrap" id="songTrackWrap">
+          <div class="song-track">
+            <div class="song-track-fill" id="songTrackFill"></div>
+            <div class="song-track-thumb" id="songTrackThumb"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="song-time">
+        <span id="songTimeCurrent">0:00</span>
+        <span id="songTimeDuration">0:00</span>
+      </div>
+
+      <p class="song-caption">
+        <!-- ⬇️ GANTI caption puitis (placeholder dulu) -->
+        i don't even listen to songs like this.
+        i only know it because she told me
+        it was her favorite.
+        somehow, that's enough
+        to make me think of her whenever it plays.
+      </p>
+
+    </section>
+
+
+    <!-- PHOTO 06 -->
+
+    <div class="photo-row right">
+
+      <div class="photo-card medium reveal">
+
+        <div class="photo-wrapper">
+
+          <img
+            src="https://files.catbox.moe/8ztdv1.webp"
+            alt="A photo of her"
+            loading="lazy"
+          />
+
+          <div class="heart-container"></div>
+
+          <button
+            class="reaction"
+            aria-label="React to photo"
+            aria-pressed="false"
+          >
+            ♡
+          </button>
+
+        </div>
+
+        <div class="photo-info">
+
+          <span class="photo-caption caption-right">
+            and yeah,<br>
+            she's really pretty.
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- NOTE 03 -->
+
+    <section class="note reveal">
+
+      <p>
+        perhaps that's what makes her beautiful.
+        <span>
+          not that she resembles something beautiful,
+          but that beautiful things sometimes remind me of her.
+        </span>
+      </p>
+
+    </section>
+
+
+    <!-- PHOTO 07 -->
+
+    <div class="photo-row center">
+
+      <div class="photo-card large reveal">
+
+        <div class="photo-wrapper">
+
+          <img
+            src="https://files.catbox.moe/zgl1nx.webp"
+            alt="A photo of her"
+            loading="lazy"
+          />
+
+          <div class="heart-container"></div>
+
+          <button
+            class="reaction"
+            aria-label="React to photo"
+            aria-pressed="false"
+          >
+            ♡
+          </button>
+
+        </div>
+
+        <div class="photo-info">
+
+          <span class="photo-caption caption-center">
+            there are photographs that capture a moment.
+            and there are photographs that make you understand
+            why you wanted to keep looking.
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- STORY 02 -->
+
+    <section class="story-line reveal">
+
+      <p>
+        she has the kind of beauty
+        <span>that doesn't ask to be noticed.</span>
+      </p>
+
+    </section>
+
+
+    <!-- PHOTO 08 -->
+
+    <div class="photo-row left">
+
+      <div class="photo-card small reveal">
+
+        <div class="photo-wrapper">
+
+          <img
+            src="https://files.catbox.moe/gwrr3z.webp"
+            alt="A photo of her"
+            loading="lazy"
+          />
+
+          <div class="heart-container"></div>
+
+          <button
+            class="reaction"
+            aria-label="React to photo"
+            aria-pressed="false"
+          >
+            ♡
+          </button>
+
+        </div>
+
+        <div class="photo-info">
+
+          <span class="photo-caption">
+            there are moments when i think
+            i've already found the right words.
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- PHOTO 09 -->
+
+    <div class="photo-row right">
+
+      <div class="photo-card medium reveal">
+
+        <div class="photo-wrapper">
+
+          <img
+            src="https://files.catbox.moe/v1afy3.webp"
+            alt="A photo of her"
+            loading="lazy"
+          />
+
+          <div class="heart-container"></div>
+
+          <button
+            class="reaction"
+            aria-label="React to photo"
+            aria-pressed="false"
+          >
+            ♡
+          </button>
+
+        </div>
+
+        <div class="photo-info">
+
+          <span class="photo-caption caption-right">
+            then i look at her again,
+            and realize i'm still trying.
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- =====================================================
+       END STORY
+  ===================================================== -->
+
+  <section class="story-line reveal">
+
+    <p>
+      and after all that,
+      <span>i still don't know how to end this.</span>
+    </p>
+
+  </section>
+
+
+  <!-- =====================================================
+       ENDING
+  ===================================================== -->
+
+  <section class="ending reveal">
+
+    <h2>
+      nine photos were never going to be enough.
+    </h2>
+
+    <div class="divider" aria-hidden="true"></div>
+
+    <p>
+      but then again,
+      i don't think a page like this
+      was ever supposed to be complete.
+
+      <br><br>
+
+      09 / for now.
+    </p>
+
+  </section>
+
+
+  <section class="final-fade" aria-hidden="true">
+
+    <div class="last-word">
+      for her
+    </div>
+
+  </section>
+
+
+  <script>
+
+    const prefersReducedMotion =
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const isTouch =
+      window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
+
+    /* =====================================================
+       SCROLL REVEAL
+    ===================================================== */
+
+    const revealElements =
+      document.querySelectorAll(".reveal");
+
+    if (
+      !prefersReducedMotion &&
+      "IntersectionObserver" in window
+    ) {
+
+      const observer =
+        new IntersectionObserver(
+          (entries) => {
+
+            entries.forEach((entry) => {
+
+              if (entry.isIntersecting) {
+
+                entry.target.classList.add("visible");
+
+                observer.unobserve(entry.target);
+
+              }
+
+            });
+
+          },
+          {
+            threshold: 0.12,
+            rootMargin: "0px 0px -8% 0px"
+          }
+        );
+
+      revealElements.forEach((el) =>
+        observer.observe(el)
+      );
+
+    } else {
+
+      revealElements.forEach((el) =>
+        el.classList.add("visible")
+      );
+
+    }
+
+
+    /* =====================================================
+       CUSTOM CURSOR
+    ===================================================== */
+
+    if (!isTouch && !prefersReducedMotion) {
+
+      const cursor =
+        document.querySelector(".cursor");
+
+      let cx = window.innerWidth / 2;
+      let cy = window.innerHeight / 2;
+
+      let tx = cx;
+      let ty = cy;
+
+
+      window.addEventListener("mousemove", (e) => {
+
+        tx = e.clientX;
+        ty = e.clientY;
+
+      });
+
+
+      function renderCursor() {
+
+        cx += (tx - cx) * 0.22;
+        cy += (ty - cy) * 0.22;
+
+        cursor.style.transform =
+          `translate(${cx}px, ${cy}px)
+           translate(-50%, -50%)`;
+
+        requestAnimationFrame(renderCursor);
+
+      }
+
+      renderCursor();
+
+
+      document
+        .querySelectorAll(
+          "button, a, .photo-wrapper, .song-track-wrap"
+        )
+        .forEach((el) => {
+
+          el.addEventListener(
+            "mouseenter",
+            () => cursor.classList.add("hover")
+          );
+
+          el.addEventListener(
+            "mouseleave",
+            () => cursor.classList.remove("hover")
+          );
+
+        });
+
+    }
+
+
+    /* =====================================================
+       PROGRESS BAR
+    ===================================================== */
+
+    const progressFill =
+      document.querySelector(".progress-bar span");
+
+
+    function updateProgress() {
+
+      const h = document.documentElement;
+
+      const max =
+        h.scrollHeight - h.clientHeight;
+
+      const p =
+        max > 0
+          ? (h.scrollTop / max) * 100
+          : 0;
+
+      progressFill.style.width =
+        p + "%";
+
+    }
+
+
+    window.addEventListener(
+      "scroll",
+      updateProgress,
+      { passive: true }
+    );
+
+    updateProgress();
+
+
+    /* =====================================================
+       PARALLAX
+    ===================================================== */
+
+    if (!prefersReducedMotion) {
+
+      const parallaxItems =
+        document.querySelectorAll(
+          ".photo-wrapper img"
+        );
+
+      let ticking = false;
+
+
+      function updateParallax() {
+
+        const vh =
+          window.innerHeight;
+
+
+        parallaxItems.forEach((img) => {
+
+          const wrapper =
+            img.parentElement;
+
+          const rect =
+            wrapper.getBoundingClientRect();
+
+
+          if (
+            rect.bottom < -200 ||
+            rect.top > vh + 200
+          ) {
+            return;
+          }
+
+
+          const wrapperCenter =
+            rect.top + rect.height / 2;
+
+          const normalized =
+            (wrapperCenter - vh / 2) / vh;
+
+          const maxShift =
+            rect.height * 0.06;
+
+          const shift =
+            normalized * maxShift;
+
+
+          img.style.setProperty(
+            "--py",
+            `${shift}px`
+          );
+
+        });
+
+
+        ticking = false;
+
+      }
+
+
+      function onScroll() {
+
+        if (!ticking) {
+
+          requestAnimationFrame(
+            updateParallax
+          );
+
+          ticking = true;
+
+        }
+
+      }
+
+
+      window.addEventListener(
+        "scroll",
+        onScroll,
+        { passive: true }
+      );
+
+      window.addEventListener(
+        "resize",
+        onScroll,
+        { passive: true }
+      );
+
+
+      updateParallax();
+
+    }
+
+
+    /* =====================================================
+       HEART REACTION
+    ===================================================== */
+
+    document
+      .querySelectorAll(".reaction")
+      .forEach((button) => {
+
+        button.addEventListener(
+          "click",
+          (event) => {
+
+            event.preventDefault();
+
+
+            const wrapper =
+              button.closest(".photo-wrapper");
+
+            const container =
+              wrapper.querySelector(
+                ".heart-container"
+              );
+
+
+            const reacted =
+              button.classList.toggle(
+                "reacted"
+              );
+
+
+            button.setAttribute(
+              "aria-pressed",
+              String(reacted)
+            );
+
+
+            button.textContent =
+              reacted ? "♥" : "♡";
+
+
+            if (prefersReducedMotion) {
+              return;
+            }
+
+
+            const amount =
+              Math.floor(
+                Math.random() * 7
+              ) + 10;
+
+
+            for (
+              let i = 0;
+              i < amount;
+              i++
+            ) {
+
+              const heart =
+                document.createElement(
+                  "span"
+                );
+
+
+              heart.className =
+                "heart";
+
+
+              const x =
+                (Math.random() - 0.5) * 160;
+
+              const y =
+                -Math.random() * 140 - 40;
+
+              const scale =
+                Math.random() * 0.9 + 0.6;
+
+              const rotation =
+                Math.random() * 60 - 30;
+
+
+              heart.style.setProperty(
+                "--x",
+                `${x}px`
+              );
+
+              heart.style.setProperty(
+                "--y",
+                `${y}px`
+              );
+
+              heart.style.setProperty(
+                "--scale",
+                scale
+              );
+
+              heart.style.setProperty(
+                "--rotate",
+                `${rotation}deg`
+              );
+
+
+              heart.style.animationDelay =
+                `${Math.random() * 150}ms`;
+
+
+              container.appendChild(
+                heart
+              );
+
+
+              setTimeout(
+                () => heart.remove(),
+                1300
+              );
+
+            }
+
+          }
+        );
+
+      });
+
+
+    /* =====================================================
+       BACKGROUND AUDIO — autoplay + fade-in on first scroll
+    ===================================================== */
+
+    const bgm = document.getElementById("bgm");
+
+    // ====== PENGATURAN — ubah sesuai selera ======
+    const BGM_VOLUME    = 0.35;   // volume akhir (0.0 – 1.0)
+    const FADE_DURATION = 2500;   // durasi fade-in BGM (ms)
+    // ============================================
+
+    bgm.volume = 0;
+
+    let bgmStarted = false;
+    let bgmFadeAnimationId = null;
+    let bgmTargetVolume = BGM_VOLUME;
+    let bgmPausedBySong = false;   // flag: BGM sedang "minggir" karena lagu dia
+
+    function fadeAudioTo(audio, targetVolume, duration, onDone) {
+      const startTime = performance.now();
+      const startVol  = audio.volume;
+
+      function tick(now) {
+        const elapsed  = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+
+        audio.volume = startVol + (targetVolume - startVol) * eased;
+
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          audio.volume = targetVolume;
+          if (typeof onDone === "function") onDone();
+        }
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    function startBgm() {
+      if (bgmStarted) return;
+      bgmStarted = true;
+
+      bgm.volume = 0;
+
+      bgm.play()
+        .then(() => {
+          fadeAudioTo(bgm, BGM_VOLUME, FADE_DURATION);
+        })
+        .catch((err) => {
+          console.warn("BGM gagal play:", err);
+          bgmStarted = false;
+        });
+    }
+
+    // BGM fade-out dan pause (dipanggil saat her-song section muncul)
+    function bgmDuckAndPause() {
+      if (bgmPausedBySong) return;
+      if (bgm.paused) return;
+
+      bgmPausedBySong = true;
+      cancelAnimationFrame(bgmFadeAnimationId);
+
+      fadeAudioTo(bgm, 0, 800, () => {
+        bgm.pause();
+      });
+    }
+
+    // BGM fade-in balik (kalau lagu dia tidak sedang main)
+    function bgmResume() {
+      if (!bgmPausedBySong) return;
+      if (!bgm.paused) return;
+
+      bgmPausedBySong = false;
+      bgm.volume = 0;
+      bgm.play()
+        .then(() => {
+          fadeAudioTo(bgm, BGM_VOLUME, 1200);
+        })
+        .catch(() => {});
+    }
+
+    // Trigger BGM pertama kali
+    window.addEventListener("scroll", startBgm, { once: true, passive: true });
+    window.addEventListener("click", startBgm, { once: true });
+    window.addEventListener("touchstart", startBgm, { once: true, passive: true });
+    window.addEventListener("keydown", startBgm, { once: true });
+
+
+    /* =====================================================
+       HER SONG — player, seek, ducking BGM
+    ===================================================== */
+
+    const herSong       = document.getElementById("her-song");
+    const herSongSection = document.getElementById("her-song-section");
+    const playBtn       = document.getElementById("songPlayBtn");
+    const trackWrap     = document.getElementById("songTrackWrap");
+    const trackFill     = document.getElementById("songTrackFill");
+    const trackThumb    = document.getElementById("songTrackThumb");
+    const timeCurrent   = document.getElementById("songTimeCurrent");
+    const timeDuration  = document.getElementById("songTimeDuration");
+
+    const HER_SONG_VOLUME = 0.7;   // volume lagu dia
+    let songFadeId = null;
+
+    function formatTime(sec) {
+      if (!isFinite(sec) || sec < 0) sec = 0;
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? "0" : ""}${s}`;
+    }
+
+    // Set durasi saat metadata siap
+    herSong.addEventListener("loadedmetadata", () => {
+      timeDuration.textContent = formatTime(herSong.duration);
+    });
+
+    // Kalau metadata sudah ada sebelumnya
+    if (herSong.readyState >= 1) {
+      timeDuration.textContent = formatTime(herSong.duration);
+    }
+
+    // Update progress bar + waktu
+    herSong.addEventListener("timeupdate", () => {
+      const pct = herSong.duration
+        ? (herSong.currentTime / herSong.duration) * 100
+        : 0;
+      trackFill.style.width = pct + "%";
+      trackThumb.style.left  = pct + "%";
+      timeCurrent.textContent = formatTime(herSong.currentTime);
+    });
+
+    // Tombol play/pause
+    function setPlayingUI(isPlaying) {
+      playBtn.classList.toggle("playing", isPlaying);
+      playBtn.setAttribute("aria-pressed", String(isPlaying));
+      herSongSection.classList.toggle("playing", isPlaying);
+    }
+
+    function songFadeIn() {
+      herSong.volume = 0;
+      const startTime = performance.now();
+      const duration = 1200;
+
+      cancelAnimationFrame(songFadeId);
+      function tick(now) {
+        const p = Math.min((now - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        herSong.volume = HER_SONG_VOLUME * eased;
+        if (p < 1) songFadeId = requestAnimationFrame(tick);
+      }
+      songFadeId = requestAnimationFrame(tick);
+    }
+
+    playBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      if (herSong.paused) {
+        // Duck BGM dulu
+        bgmDuckAndPause();
+
+        herSong.play()
+          .then(() => {
+            setPlayingUI(true);
+            songFadeIn();
+          })
+          .catch((err) => {
+            console.warn("Lagu dia gagal play:", err);
+            setPlayingUI(false);
+            bgmResume();
+          });
+      } else {
+        // Pause lagu → fade out cepat lalu pause
+        const startVol = herSong.volume;
+        const startTime = performance.now();
+        const duration = 500;
+
+        cancelAnimationFrame(songFadeId);
+        function tick(now) {
+          const p = Math.min((now - startTime) / duration, 1);
+          herSong.volume = startVol * (1 - p);
+          if (p < 1) {
+            songFadeId = requestAnimationFrame(tick);
+          } else {
+            herSong.pause();
+            setPlayingUI(false);
+            bgmResume();
+          }
+        }
+        songFadeId = requestAnimationFrame(tick);
+      }
+    });
+
+    // Ketika lagu selesai
+    herSong.addEventListener("ended", () => {
+      setPlayingUI(false);
+      bgmResume();
+    });
+
+    // Klik / drag untuk seek
+    let isDragging = false;
+
+    function seekFromEvent(e) {
+      const rect = trackWrap.getBoundingClientRect();
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      const ratio = Math.max(0, Math.min(1, x / rect.width));
+      if (herSong.duration) {
+        herSong.currentTime = ratio * herSong.duration;
+      }
+    }
+
+    trackWrap.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      trackWrap.classList.add("active");
+      seekFromEvent(e);
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (isDragging) seekFromEvent(e);
+    });
+
+    window.addEventListener("mouseup", () => {
+      if (isDragging) {
+        isDragging = false;
+        trackWrap.classList.remove("active");
+      }
+    });
+
+    // Touch support
+    trackWrap.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      isDragging = true;
+      trackWrap.classList.add("active");
+      seekFromEvent(e);
+    }, { passive: false });
+
+    trackWrap.addEventListener("touchmove", (e) => {
+      if (isDragging) {
+        e.preventDefault();
+        seekFromEvent(e);
+      }
+    }, { passive: false });
+
+    trackWrap.addEventListener("touchend", () => {
+      isDragging = false;
+      trackWrap.classList.remove("active");
+    });
+
+    // IntersectionObserver: saat section masuk viewport → BGM duck
+    if ("IntersectionObserver" in window) {
+      const songSectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              // Section masuk viewport → BGM minggir (kalau BGM sudah jalan)
+              if (bgmStarted && !bgm.paused) {
+                bgmDuckAndPause();
+              }
+            } else {
+              // Section keluar viewport → kalau lagu dia tidak sedang main, BGM balik
+              if (!herSong.paused) return; // biarin user dengerin lagu dia
+              if (bgmPausedBySong) {
+                bgmResume();
+              }
+            }
+          });
+        },
+        {
+          threshold: 0.4,   // 40% section keliatan baru trigger
+          rootMargin: "0px 0px -10% 0px"
+        }
+      );
+
+      songSectionObserver.observe(herSongSection);
+    }
+
+  </script>
+
+</body>
+</html>
